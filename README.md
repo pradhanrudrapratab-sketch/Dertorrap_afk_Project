@@ -9,32 +9,32 @@
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                  CONTROL METHODS                    │
-│                                                     │
-│  📱 App    🌐 Web Panel    🧠 Claude MCP    🔗 API  │
+│                  CONTROL METHODS                             │
+│                                                              │
+│    📱 App    🌐 Web Panel    🧠 Claude MCP    🔗 API         │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
-│           InfinityFree (PHP Proxy)                  │
-│         index.html + index.php                      │
-│    Hides API key — never exposed to browser         │
+│                    InfinityFree (PHP Proxy)                  │
+│                  index.html + index.php                      │
+│             Hides API key — never exposed to browser         │
 └──────────────────────┬──────────────────────────────┘
                        │
           ┌────────────┴────────────┐
           ▼                         ▼
-┌─────────────────┐      ┌─────────────────────┐
-│  Render Account │      │   Render Account 2  │
-│       #1        │      │    MCP Server       │
-│   Bot API       │◄─────│  (Node.js + MCP     │
-│  (Node.js +     │      │   SDK)              │
-│   Mineflayer)   │      └─────────────────────┘
+┌─────────────────┐         ┌─────────────────────┐
+│  Render Account    │         │   Render Account 2      │
+│       #1           │         │    MCP Server           │
+│   Bot API          │  ◄─────│  (Node.js + MCP         │
+│  (Node.js +        │         │   SDK)                  │
+│   Mineflayer)      │         └─────────────────────┘
 └────────┬────────┘
          │
          ▼
 ┌─────────────────┐
-│ Minecraft Server│
-│  (Any server)   │
+│   Minecraft Server │
+│    (Any server)    │
 └─────────────────┘
 ```
 
