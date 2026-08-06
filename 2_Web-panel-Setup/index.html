@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MrKrishna — Dertorrap Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Reset & Base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #080c14;
+      --surface:   #0e1523;
+      --surface2:  #151f30;
+      --border:    #1e2d45;
+      --accent:    #3b82f6;
+      --accent2:   #8b5cf6;
+      --green:     #22c55e;
+      --red:       #ef4444;
+      --yellow:    #f59e0b;
+      --text:      #e2e8f0;
+      --muted:     #64748b;
+      --mono:      'JetBrains Mono', monospace;
+      --sans:      'Space Grotesk', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 0 60px;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(59,130,246,0.12), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(139,92,246,0.08), transparent);
+    }
+
+    /* ── Topbar ───────────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 28px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(14,21,35,0.8);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #fff;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 0 0 rgba(59,130,246,0);
+      flex-shrink: 0;
+    }
+    .logo:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 20px rgba(59,130,246,0.4);
+    }
+
+    .brand-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .brand-name span {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ig-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .ig-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .ig-btn svg { width: 16px; height: 16px; }
+
+    /* ── Connection Status Bar ────────────────────────── */
+    .status-bar {
+      margin: 24px 24px 0;
+      padding: 14px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+    .status-dot.connected { background: var(--green); animation: pulse-dot 2s infinite; }
+    .status-dot.disconnected { background: var(--red); }
+    .status-dot.loading { background: var(--yellow); animation: pulse-dot 1s infinite; }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+      50% { opacity: 0.6; }
+    }
+
+    .status-text { font-size: 0.88rem; color: var(--muted); }
+    .status-text strong { color: var(--text); }
+
+    .status-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-stat {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .live-stat span { color: var(--text); }
+
+    /* ── Main Layout ──────────────────────────────────── */
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 20px 24px 0;
+    }
+    @media (max-width: 768px) {
+      .main { grid-template-columns: 1fr; }
+      .topbar { padding: 14px 16px; }
+      .status-bar { margin: 16px 16px 0; }
+      .main { padding: 16px 16px 0; }
+    }
+
+    /* ── Cards ────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .card-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Buttons ──────────────────────────────────────── */
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .btn-group.single { grid-template-columns: 1fr; }
+    .btn-group.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #2563eb);
+      color: #fff;
+      border-color: rgba(59,130,246,0.3);
+    }
+    .btn-primary:hover:not(:disabled) { box-shadow: 0 0 20px rgba(59,130,246,0.35); }
+
+    .btn-danger {
+      background: rgba(239,68,68,0.12);
+      color: #f87171;
+      border-color: rgba(239,68,68,0.25);
+    }
+    .btn-danger:hover:not(:disabled) { background: rgba(239,68,68,0.2); }
+
+    .btn-success {
+      background: rgba(34,197,94,0.12);
+      color: #4ade80;
+      border-color: rgba(34,197,94,0.25);
+    }
+    .btn-success:hover:not(:disabled) { background: rgba(34,197,94,0.2); }
+
+    .btn-warning {
+      background: rgba(245,158,11,0.12);
+      color: #fbbf24;
+      border-color: rgba(245,158,11,0.25);
+    }
+    .btn-warning:hover:not(:disabled) { background: rgba(245,158,11,0.2); }
+
+    .btn-purple {
+      background: rgba(139,92,246,0.12);
+      color: #a78bfa;
+      border-color: rgba(139,92,246,0.25);
+    }
+    .btn-purple:hover:not(:disabled) { background: rgba(139,92,246,0.2); }
+
+    .btn-ghost {
+      background: var(--surface2);
+      color: var(--muted);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover:not(:disabled) { color: var(--text); border-color: var(--muted); }
+
+    /* ── Input Row ────────────────────────────────────── */
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .input-row input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.18s;
+    }
+    .input-row input:focus { border-color: var(--accent); }
+    .input-row input::placeholder { color: var(--muted); }
+
+    .input-row .btn { padding: 10px 16px; flex-shrink: 0; }
+
+    /* ── Toast ────────────────────────────────────────── */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 999;
+    }
+
+    .toast {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 0.83rem;
+      max-width: 320px;
+      animation: slideIn 0.25s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .toast.success { border-color: rgba(34,197,94,0.4); }
+    .toast.error   { border-color: rgba(239,68,68,0.4); }
+    .toast.info    { border-color: rgba(59,130,246,0.4); }
+    .toast.warning { border-color: rgba(245,158,11,0.4); }
+
+    .toast-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .toast-body { flex: 1; }
+    .toast-title { font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .toast-msg { color: var(--muted); line-height: 1.4; }
+
+    @keyframes slideIn {
+      from { transform: translateX(120%); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0);    opacity: 1; }
+      to   { transform: translateX(120%); opacity: 0; }
+    }
+
+    /* ── Action Badges ────────────────────────────────── */
+    .action-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid;
+    }
+    .badge-on  { background: rgba(34,197,94,0.1);  color: #4ade80; border-color: rgba(34,197,94,0.3); }
+    .badge-off { background: rgba(100,116,139,0.1); color: var(--muted); border-color: var(--border); }
+
+    /* ── Log Box ──────────────────────────────────────── */
+    .log-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      max-height: 180px;
+      overflow-y: auto;
+      margin-top: 12px;
+    }
+    .log-entry { padding: 3px 0; display: flex; gap: 8px; }
+    .log-time  { color: #334155; flex-shrink: 0; }
+    .log-msg   { color: #94a3b8; }
+
+    /* ── Spinner ──────────────────────────────────────── */
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Stat Grid ────────────────────────────────────── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .stat-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .stat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .stat-val   { font-family: var(--mono); font-size: 0.88rem; font-weight: 600; color: var(--text); }
+
+    /* ── Divider ──────────────────────────────────────── */
+    .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+    /* ── Full width card ──────────────────────────────── */
+    .card-full { grid-column: 1 / -1; }
+
+    /* ── Scroll ───────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Topbar ─────────────────────────────────────────── -->
+<header class="topbar">
+  <a href="https://mrkanha.likesyou.org" target="_blank" class="brand" title="Visit Portfolio">
+    <div class="logo">MK</div>
+    <span class="brand-name"><span>MrKrishna</span></span>
+  </a>
+  <div class="topbar-right">
+    <a href="https://instagram.com/mrkrishna.in" target="_blank" class="ig-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+      </svg>
+      @mrkrishna.in
+    </a>
+  </div>
+</header>
+
+<!-- ── Status Bar ─────────────────────────────────────── -->
+<div class="status-bar">
+  <div class="status-left">
+    <div class="status-dot" id="connDot"></div>
+    <div class="status-text" id="connText"><strong>Loading...</strong></div>
+  </div>
+  <div class="status-right">
+    <div class="live-stat">❤️ <span id="statHp">—</span></div>
+    <div class="live-stat">🍖 <span id="statFood">—</span></div>
+    <div class="live-stat">🏓 <span id="statPing">—</span></div>
+    <div class="live-stat">⏱ <span id="statUptime">—</span></div>
+  </div>
+</div>
+
+<!-- ── Main Grid ──────────────────────────────────────── -->
+<div class="main">
+
+  <!-- Bot Control -->
+  <div class="card">
+    <div class="card-title">🎮 Bot Control</div>
+    <div class="btn-group" style="margin-bottom:10px">
+      <button class="btn btn-primary" onclick="action('start')">
+        ▶ Start Bot
+      </button>
+      <button class="btn btn-danger" onclick="action('stop')">
+        ■ Stop Bot
+      </button>
+    </div>
+    <div class="btn-group single">
+      <button class="btn btn-ghost" onclick="fetchStatus()">
+        ↻ Refresh Status
+      </button>
+    </div>
+  </div>
+
+  <!-- Anti-AFK Actions -->
+  <div class="card">
+    <div class="card-title">🕹️ Anti-AFK Actions</div>
+    <div class="btn-group triple" style="margin-bottom:10px">
+      <button class="btn btn-success" onclick="action('jump')">🐸 Jump</button>
+      <button class="btn btn-warning" onclick="action('move')">🚶 Move</button>
+      <button class="btn btn-purple" onclick="action('sneak')">🦆 Sneak</button>
+    </div>
+    <div class="btn-group single">
+      <button class="btn btn-ghost" onclick="action('stopaction')">⏹ Stop All Actions</button>
+    </div>
+    <div class="divider"></div>
+    <div class="card-title" style="margin-bottom:8px">Active</div>
+    <div class="action-badges">
+      <span class="badge badge-off" id="badgeJump">🐸 Jump OFF</span>
+      <span class="badge badge-off" id="badgeMove">🚶 Move OFF</span>
+      <span class="badge badge-off" id="badgeSneak">🦆 Sneak OFF</span>
+    </div>
+  </div>
+
+  <!-- Server Setup -->
+  <div class="card">
+    <div class="card-title">⚙️ Server Setup</div>
+    <div class="input-row">
+      <input id="ipInput" type="text" placeholder="IP — e.g. hypixel.net"/>
+      <button class="btn btn-primary" onclick="setValue('ip', 'ipInput')">Set</button>
+    </div>
+    <div class="input-row">
+      <input id="portInput" type="number" placeholder="Port — e.g. 25565"/>
+      <button class="btn btn-primary" onclick="setValue('port', 'portInput')">Set</button>
+    </div>
+    <div class="input-row">
+      <input id="versionInput" type="text" placeholder="Version — e.g. 1.20.1 or auto"/>
+      <button class="btn btn-primary" onclick="setValue('version', 'versionInput')">Set</button>
+    </div>
+  </div>
+
+  <!-- Bot Settings -->
+  <div class="card">
+    <div class="card-title">👤 Bot Settings</div>
+    <div class="input-row">
+      <input id="renameInput" type="text" placeholder="New username (3–16 chars)"/>
+      <button class="btn btn-purple" onclick="setValue('rename', 'renameInput')">Rename</button>
+    </div>
+    <div class="divider"></div>
+    <div class="card-title" style="margin-bottom:8px">Live Stats</div>
+    <div class="stat-grid">
+      <div class="stat-item">
+        <div class="stat-label">Position</div>
+        <div class="stat-val" id="statPos">—</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Dimension</div>
+        <div class="stat-val" id="statDim">—</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Game Mode</div>
+        <div class="stat-val" id="statGm">—</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Auto-Reconnect</div>
+        <div class="stat-val" id="statAr">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logs -->
+  <div class="card card-full">
+    <div class="card-title">📋 Recent Logs</div>
+    <div class="log-box" id="logBox">
+      <div class="log-entry"><span class="log-msg">Waiting for status...</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Toast Container ────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<script>
+  // ── Toast System ──────────────────────────────────────
+  function toast(type, title, msg, duration = 4000) {
+    const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.innerHTML = `
+      <div class="toast-icon">${icons[type] || 'ℹ️'}</div>
+      <div class="toast-body">
+        <div class="toast-title">${title}</div>
+        ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+      </div>`;
+    document.getElementById('toast-container').appendChild(el);
+    setTimeout(() => {
+      el.style.animation = 'slideOut 0.25s ease forwards';
+      setTimeout(() => el.remove(), 250);
+    }, duration);
+  }
+
+  // ── API Call via PHP proxy ────────────────────────────
+  async function api(action, value = null) {
+    let url = `index.php?action=${encodeURIComponent(action)}`;
+    if (value !== null && value !== '') url += `&value=${encodeURIComponent(value)}`;
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      return { ok: res.ok, status: res.status, data };
+    } catch (err) {
+      return { ok: false, status: 0, data: { success: false, error: 'Network error — cannot reach panel server' } };
+    }
+  }
+
+  // ── Loading state on button ───────────────────────────
+  function setLoading(btn, loading) {
+    if (!btn) return;
+    if (loading) {
+      btn._origHTML = btn.innerHTML;
+      btn.innerHTML = `<div class="spinner"></div>`;
+      btn.disabled = true;
+    } else {
+      btn.innerHTML = btn._origHTML || btn.innerHTML;
+      btn.disabled = false;
+    }
+  }
+
+  // ── Simple action endpoint ────────────────────────────
+  async function action(name, btnEl) {
+    const btn = btnEl || event?.currentTarget;
+    setLoading(btn, true);
+    const { ok, data } = await api(name);
+    setLoading(btn, false);
+
+    const actionLabels = {
+      start: 'Start Bot', stop: 'Stop Bot',
+      jump: 'Auto-Jump', move: 'Auto-Move',
+      sneak: 'Sneak Mode', stopaction: 'Stop Actions'
+    };
+    const label = actionLabels[name] || name;
+
+    if (data.success) {
+      toast('success', `${label}`, data.message || 'Done!');
+    } else {
+      const hint = data.hint ? `<br><small>${data.hint}</small>` : '';
+      toast('error', `${label} Failed`, (data.error || 'Unknown error') + hint);
+    }
+
+    // Refresh status after action
+    setTimeout(fetchStatus, 800);
+  }
+
+  // ── Value action (ip/port/rename/version) ────────────
+  async function setValue(actionName, inputId) {
+    const input = document.getElementById(inputId);
+    const value = input.value.trim();
+    if (!value) {
+      toast('warning', 'Empty Field', 'Please enter a value first.');
+      input.focus();
+      return;
+    }
+    const btn = input.nextElementSibling;
+    setLoading(btn, true);
+    const { ok, data } = await api(actionName, value);
+    setLoading(btn, false);
+
+    if (data.success) {
+      toast('success', `${actionName.charAt(0).toUpperCase()+actionName.slice(1)} Set`, data.message || `Value saved!`);
+      input.value = '';
+
+      // Helpful hint after setting IP/port
+      if (actionName === 'ip' && !data.readyToStart) {
+        setTimeout(() => toast('info', 'Next Step', 'Now set the Port, then hit Start Bot.'), 600);
+      }
+      if (actionName === 'port' && !data.readyToStart) {
+        setTimeout(() => toast('info', 'Next Step', 'Now set the IP, then hit Start Bot.'), 600);
+      }
+      if ((actionName === 'ip' || actionName === 'port') && data.readyToStart) {
+        setTimeout(() => toast('info', 'Ready!', 'Both IP and Port are set. Hit Start Bot!'), 600);
+      }
+    } else {
+      toast('error', 'Failed', data.error || 'Something went wrong.');
+    }
+  }
+
+  // ── Update UI from status ─────────────────────────────
+  function updateUI(d) {
+    const conn = d.connection || {};
+    const live = d.liveStats || null;
+    const acts = d.actions  || {};
+    const setup = d.setup   || {};
+
+    // Status dot & text
+    const dot  = document.getElementById('connDot');
+    const text = document.getElementById('connText');
+    if (conn.connected) {
+      dot.className = 'status-dot connected';
+      text.innerHTML = `<strong>Connected</strong> — ${setup.ip || '?'}:${setup.port || '?'} as <strong>${setup.username || '?'}</strong>`;
+    } else {
+      dot.className = 'status-dot disconnected';
+      text.innerHTML = `<strong>Disconnected</strong>${conn.lastError ? ` — ${conn.lastError.slice(0,60)}` : ''}`;
+    }
+
+    // Live stats bar
+    document.getElementById('statHp').textContent     = live?.health != null ? `${live.health.toFixed(1)}/20` : '—';
+    document.getElementById('statFood').textContent   = live?.food   != null ? `${live.food}/20`              : '—';
+    document.getElementById('statPing').textContent   = live?.ping   != null ? `${live.ping}ms`               : '—';
+    document.getElementById('statUptime').textContent = conn.uptimeFormatted || '—';
+
+    // Stat grid
+    const pos = live?.position;
+    document.getElementById('statPos').textContent  = pos ? `${pos.x}, ${pos.y}, ${pos.z}` : '—';
+    document.getElementById('statDim').textContent  = live?.dimension || '—';
+    document.getElementById('statGm').textContent   = live?.gameMode  || '—';
+    document.getElementById('statAr').textContent   = conn.autoReconnect ? 'ON' : 'OFF';
+
+    // Action badges
+    function setBadge(id, on, labelOn, labelOff) {
+      const el = document.getElementById(id);
+      el.textContent = on ? labelOn : labelOff;
+      el.className = `badge ${on ? 'badge-on' : 'badge-off'}`;
+    }
+    setBadge('badgeJump',  acts.jump,  '🐸 Jump ON',  '🐸 Jump OFF');
+    setBadge('badgeMove',  acts.move,  '🚶 Move ON',  '🚶 Move OFF');
+    setBadge('badgeSneak', acts.sneak, '🦆 Sneak ON', '🦆 Sneak OFF');
+
+    // Logs
+    const logs = d.recentLogs || [];
+    const box  = document.getElementById('logBox');
+    if (logs.length === 0) {
+      box.innerHTML = '<div class="log-entry"><span class="log-msg">No logs yet.</span></div>';
+    } else {
+      box.innerHTML = [...logs].reverse().map(l =>
+        `<div class="log-entry">
+          <span class="log-time">${l.time.replace('T',' ').split('.')[0]}</span>
+          <span class="log-msg">${l.msg}</span>
+        </div>`
+      ).join('');
+    }
+  }
+
+  // ── Fetch status ──────────────────────────────────────
+  async function fetchStatus() {
+    const dot = document.getElementById('connDot');
+    dot.className = 'status-dot loading';
+    const { ok, data } = await api('status');
+    if (ok && data) {
+      updateUI(data);
+    } else {
+      dot.className = 'status-dot disconnected';
+      document.getElementById('connText').innerHTML = '<strong>Cannot reach bot server</strong>';
+    }
+  }
+
+  // ── Enter key on inputs ───────────────────────────────
+  document.getElementById('ipInput').addEventListener('keydown',      e => e.key === 'Enter' && setValue('ip', 'ipInput'));
+  document.getElementById('portInput').addEventListener('keydown',    e => e.key === 'Enter' && setValue('port', 'portInput'));
+  document.getElementById('versionInput').addEventListener('keydown', e => e.key === 'Enter' && setValue('version', 'versionInput'));
+  document.getElementById('renameInput').addEventListener('keydown',  e => e.key === 'Enter' && setValue('rename', 'renameInput'));
+
+  // ── Init ──────────────────────────────────────────────
+  fetchStatus();
+  setInterval(fetchStatus, 15000); // auto-refresh every 15s
+</script>
+</body>
+</html>
