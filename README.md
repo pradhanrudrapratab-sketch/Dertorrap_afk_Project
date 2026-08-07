@@ -250,7 +250,7 @@ define('ALLOWED_ORIGIN', 'https://yourdomain.com');
 
 ## 📱 Mobile App
 
-The web panel converted into a native-feeling mobile app using **HOW Web to App**.
+The web panel converted into a native-feeling mobile app using **HopWeb to App**.
 
 ### XOR Encryption (Source Protection)
 
@@ -372,7 +372,7 @@ Fail    → Log error → Wait 15s → Try again
 | MCP Server | Express + MCP SDK |
 | Web Panel Backend | PHP (cURL) |
 | Web Panel Frontend | HTML + CSS + Vanilla JS |
-| Mobile App | HOW Web to App (WebView) |
+| Mobile App | HopWeb to App (WebView) |
 | Encryption | XOR cipher |
 | Hosting (Bot) | Render.com |
 | Hosting (MCP) | Render.com |
